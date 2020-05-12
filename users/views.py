@@ -1,7 +1,8 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth import login
+from django.contrib.auth import logout
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib import messages
 from .forms import *
 from .models import *
 
@@ -20,6 +21,7 @@ def user_register_view(request, *args, **kwargs):
     form = UserCreationForm()
     return render(request, 'users/register.html', {})
 
+
 # redirects the user to the proper portal after they login
 def user_login_redirect(request, *args, **kwargs):
     user = request.user
@@ -31,3 +33,9 @@ def user_login_redirect(request, *args, **kwargs):
         return redirect('student-home')
     else:
         return redirect('landing-page')
+
+
+def user_logout_view(request, *args, **kwargs):
+    logout(request)
+    messages.success(request, 'You have logged out.')
+    return redirect('landing-page')
