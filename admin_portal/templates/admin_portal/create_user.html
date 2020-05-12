@@ -4,7 +4,8 @@
 
 <form method="POST">
     {% csrf_token %}
-    {{ form.as_p }}
+    {{ base_form.as_p }}
+    {{ extended_form.as_p }}
     <button type="submit">Create User</button>
 </form>
 

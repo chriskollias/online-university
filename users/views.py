@@ -22,6 +22,12 @@ def user_register_view(request, *args, **kwargs):
 
 # redirects the user to the proper portal after they login
 def user_login_redirect(request, *args, **kwargs):
-    # need to get which type of user it is
-    # look into django groups
-    pass
+    user = request.user
+    if user.groups.filter(name='Admin').exists():
+        return redirect('admin-home')
+    elif user.groups.filter(name='Instructor').exists():
+        return redirect('instructor-home')
+    elif user.groups.filter(name='Student').exists():
+        return redirect('student-home')
+    else:
+        return redirect('landing-page')
