@@ -5,6 +5,10 @@
     {{ course.description }}
 
     <p>Instructors:
-        [insert instructors here]
+        <ul>
+        {% for instructor in course.instructors.all %}
+            <li>{{ instructor }}</li>
+        {% endfor %}
+        </ul>
     </p>
 {% endblock content %}

@@ -1,5 +1,6 @@
 from django import forms
 from .models import Course
+from django.contrib.auth.models import User
 
 class CreateCourseForm(forms.ModelForm):
     name = forms.CharField(max_length=150)
@@ -7,8 +8,8 @@ class CreateCourseForm(forms.ModelForm):
     course_code = forms.CharField(max_length=8)
     subject = forms.ChoiceField(required=False)
     syllabus = forms.FileField(required=False)
-    instructors = forms.ChoiceField(required=False)
-    students = forms.ChoiceField(required=False)
+    instructors = forms.ModelMultipleChoiceField(queryset=User.objects.filter(groups__name__in=['Instructor']), required=False)
+    students = forms.ModelMultipleChoiceField(queryset=User.objects.filter(groups__name__in=['Student']), required=False)
     # optional: add start/end dates
 
     class Meta:
