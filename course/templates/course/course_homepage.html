@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>{{ course.name }} ( {{ course.course_code }} )</h2>
+    {{ course.description }}
+
+    <p>Instructors:
+        [insert instructors here]
+    </p>
+{% endblock content %}

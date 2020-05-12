@@ -4,7 +4,7 @@
     {% if course_list %}
         <ul>
             {% for course in course_list %}
-                <li> {{ course.name }} </li>
+                <li> <a href="{% url 'course-home' course.pk %}">{{ course.name }}</a></li>
             {% endfor %}
         </ul>
     {% else %}
