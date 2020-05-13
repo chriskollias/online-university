@@ -1,11 +1,13 @@
 {% extends 'base.html' %}
 
+{% load crispy_forms_tags %}
+
 {% block content %}
 
 <form method="POST">
     {% csrf_token %}
-    {{ base_form.as_p }}
-    {{ extended_form.as_p }}
+    {{ base_form|crispy }}
+    {{ extended_form|crispy }}
     <button type="submit">Create User</button>
 </form>
 

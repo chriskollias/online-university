@@ -25,6 +25,7 @@ def user_register_view(request, *args, **kwargs):
 # redirects the user to the proper portal after they login
 def user_login_redirect(request, *args, **kwargs):
     user = request.user
+    messages.success(request, 'You have logged in.')
     if user.groups.filter(name='Admin').exists():
         return redirect('admin-home')
     elif user.groups.filter(name='Instructor').exists():

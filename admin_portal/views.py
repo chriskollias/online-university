@@ -1,12 +1,15 @@
 from django.shortcuts import render, redirect
+from django.contrib import messages
 from django.contrib.auth.models import User, Group
 from django.contrib.auth.forms import UserCreationForm
 from online_university.permissions import group_required
 from .forms import *
 
+
 @group_required('Admin')
 def admin_portal_home_view(request, *args, **kwargs):
     return render(request, 'admin_portal/admin_portal_home.html', {})
+
 
 @group_required('Admin')
 def create_user_view(request, *args, **kwargs):
@@ -24,7 +27,6 @@ def create_user_view(request, *args, **kwargs):
             new_user.last_name = last_name
             new_user.email = email
             new_user.save()
-            #new_user = User(username=username, first_name=first_name, last_name=last_name, email=email, password=password)
 
             if user_type == 'Admin':
                 admin_group, created = Group.objects.get_or_create(name='Admin')
@@ -37,7 +39,9 @@ def create_user_view(request, *args, **kwargs):
                 new_user.groups.add(student_group)
             else:
                 print('Error - invalid user_type, could not add user to user group.')
-            # TODO: insert success message here
+                messages.error(request, 'Error - failed to create new user.')
+
+            messages.success(request, 'New user has been successfully created.')
             return redirect('admin-home') # will want to redirect elsewhere most likely, e.g. list of users
         else:
             print(base_form.errors)
