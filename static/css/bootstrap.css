@@ -2842,8 +2842,10 @@ fieldset:disabled a.btn {
 }
 
 .btn-outline-success {
-  color: #28a745;
-  background-color: transparent;
+  /* color: #28a745; */
+  /* background-color: transparent; */
+  color: #fff;
+  background-color: #28a745;
   background-image: none;
   border-color: #28a745;
 }

@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from online_university.permissions import group_required
 from .forms import CreateCourseForm
-from .models import Course
+from .models import Course, Subject
 
 @group_required('Admin', 'Instructor')
 def create_course_view(request, *args, **kwargs):
