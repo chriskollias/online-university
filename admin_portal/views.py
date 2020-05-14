@@ -3,7 +3,7 @@ from django.contrib import messages
 from django.contrib.auth.models import User, Group
 from django.contrib.auth.forms import UserCreationForm
 from online_university.permissions import group_required
-from .forms import *
+from .forms import AdminCreateUserForm
 
 
 @group_required('Admin')
@@ -21,7 +21,6 @@ def create_user_view(request, *args, **kwargs):
             first_name = extended_form.cleaned_data['first_name']
             last_name = extended_form.cleaned_data['last_name']
             email = extended_form.cleaned_data['email']
-            print('User type is ', user_type)
             new_user = base_form.save()
             new_user.first_name = first_name
             new_user.last_name = last_name

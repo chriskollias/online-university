@@ -9,6 +9,9 @@
         <li>Most recent login: {{ user.last_login }}</li>
         <li>Account Created: {{ user.date_joined }}</li>
     </ul>
+    <div>
+        <a class="btn btn-primary edit-btn" href="{% url 'edit-profile' user.pk %}" role="button">Edit Profile</a>
+    </div>
 {% else %}
     Error: requested user does not exist.
 {% endif %}

@@ -553,6 +553,11 @@ pre code {
   overflow-y: scroll;
 }
 
+.edit-btn {
+    position: relative;
+    right: -5%;
+}
+
 .form-container {
     margin-left: 5%;
     margin-top: 2%;

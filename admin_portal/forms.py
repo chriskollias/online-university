@@ -10,13 +10,3 @@ class AdminCreateUserForm(forms.Form):
         ('Student', 'Student'),
     )
     user_type = forms.ChoiceField(choices=USER_TYPES)
-
-    '''
-    def clean(self):
-        cleaned_data = super().clean()
-        password = cleaned_data.get('password')
-        password_confirmation = cleaned_data.get('password_confirmation')
-
-        if password != password_confirmation:
-            raise forms.ValidationError("Error: passwords do not match.")
-    '''
