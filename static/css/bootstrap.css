@@ -553,6 +553,17 @@ pre code {
   overflow-y: scroll;
 }
 
+.form-container {
+    margin-left: 5%;
+    margin-top: 2%;
+    display: block;
+    width: 40%;
+}
+
+.form-heading {
+    margin-bottom: 3%;
+}
+
 .container {
   width: 100%;
   padding-right: 15px;
