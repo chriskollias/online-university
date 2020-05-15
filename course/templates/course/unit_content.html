@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    {% if unit %}
+        <h2>{{ unit.unit_order_num }}) {{ unit.name }}</h2>
+        {{ unit.description }} <br>
+        <ul>
+            <li> files will go here </li>
+
+        </ul>
+    {% else %}
+        <h2>Requested unit is not available.</h2>
+    {% endif %}
+{% endblock content %}

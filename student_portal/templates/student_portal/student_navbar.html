@@ -11,14 +11,14 @@
         <a class="nav-link" href="{% url 'landing-page' %}">Home <span class="sr-only">(current)</span></a>
       </li>
       <li class="nav-item active">
-        <a class="nav-link" href="{% url 'user-profile' user.pk %}">My Profile</a>
+        <a class="nav-link" href="{% url 'user-profile' request.user.pk %}">My Profile</a>
       </li>
       <li class="nav-item dropdown active">
         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           Courses
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-          <a class="dropdown-item" href="#">My Courses</a>
+          <a class="dropdown-item" href="{% url 'my-courses' %}">My Courses</a>
           <a class="dropdown-item" href="{% url 'all-courses' %}">View All Courses</a>
           <div class="dropdown-divider"></div>
           <a class="dropdown-item" href="#">Something else here</a>

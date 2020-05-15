@@ -26,6 +26,18 @@ def all_courses_view(request, *args, **kwargs):
     return render(request, 'course/view_all_courses.html', {'course_list': course_list})
 
 
+def my_courses_view(request, *args, **kwargs):
+    if request.user.groups.filter(name='Instructor').exists():
+        my_courses = Course.objects.filter(instructors=request.user)
+    elif request.user.groups.filter(name='Student').exists():
+        my_courses = Course.objects.filter(students=request.user)
+    else:
+        # TODO put a real error msg and redirect here
+        return redirect('landing-page')
+    # TODO: I think we might ultimately want a unique template for this one depending on if user is student or instructor
+    return render(request, 'course/view_all_courses.html', {'course_list': my_courses})
+
+
 def course_home_view(request, course_id, *args, **kwargs):
     course = get_object_or_404(Course, pk=course_id)
     course_sections = CourseSection.objects.filter(course=course)
@@ -36,6 +48,10 @@ def course_home_view(request, course_id, *args, **kwargs):
         section_units = CourseUnit.objects.filter(section=section).order_by('unit_order_num')
         course_units[section] = section_units
 
-    #print(f'Course units: {course_units}')
     return render(request, 'course/course_homepage.html', {'course': course, 'course_sections': course_sections,
                                                            'course_units': course_units})
+
+
+def unit_content_view(request, unit_id, *args, **kwargs):
+    unit = get_object_or_404(CourseUnit, pk=unit_id)
+    return render(request, 'course/unit_content.html', {'unit': unit})

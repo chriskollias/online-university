@@ -41,7 +41,7 @@ def create_user_view(request, *args, **kwargs):
                 messages.error(request, 'Error - failed to create new user.')
 
             messages.success(request, 'New user has been successfully created.')
-            return redirect('admin-home') # will want to redirect elsewhere most likely, e.g. list of users
+            return redirect('all-users')
         else:
             print(base_form.errors)
             print(extended_form.errors)

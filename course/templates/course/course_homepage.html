@@ -13,7 +13,11 @@
             </ul>
         </p>
     </div>
+    <div class="course-resources-container">
+        <h2>Course Resources</h2>
 
+
+    </div>
     <div class="course-section-container">
         {% if course_sections %}
             <h2>Course Sections</h2>
@@ -23,8 +27,8 @@
 
                     {% for key, value in course_units.items %}
                         {% if key == section %}
-                            {% for item in value %}
-                                <br>Unit {{ item.unit_order_num }}) {{ item.name }}
+                            {% for unit in value %}
+                                <br><a href="{% url 'unit-content' unit.pk  %}">Unit {{ unit.unit_order_num }}) {{ unit.name }}</a>
                             {% endfor %}
                         {% endif %}
                     {% endfor %}

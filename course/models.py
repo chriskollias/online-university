@@ -44,7 +44,6 @@ class CourseUnit(models.Model):
 
 class CourseContentFile(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
-    section = models.ForeignKey(CourseSection, null=True, on_delete=models.CASCADE)
     unit = models.ForeignKey(CourseUnit, null=True, on_delete=models.CASCADE)
     file = models.FileField()
     name = models.CharField(max_length=150)
