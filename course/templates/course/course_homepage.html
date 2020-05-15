@@ -4,11 +4,35 @@
     <h2>{{ course.name }} ( {{ course.course_code }} )</h2>
     {{ course.description }}
 
-    <p>Instructors:
-        <ul>
-        {% for instructor in course.instructors.all %}
-            <li>{{ instructor }}</li>
-        {% endfor %}
-        </ul>
-    </p>
+    <div class="instructor-container">
+        <p>Instructors:
+            <ul>
+            {% for instructor in course.instructors.all %}
+                <li>{{ instructor }}</li>
+            {% endfor %}
+            </ul>
+        </p>
+    </div>
+
+    <div class="course-section-container">
+        {% if course_sections %}
+            <h2>Course Sections</h2>
+            {% for section in course_sections %}
+                <p>
+                    {{ section.name }}
+
+                    {% for key, value in course_units.items %}
+                        {% if key == section %}
+                            {% for item in value %}
+                                <br>Unit {{ item.unit_order_num }}) {{ item.name }}
+                            {% endfor %}
+                        {% endif %}
+                    {% endfor %}
+
+
+                </p>
+            {% endfor %}
+
+        {% endif %}
+    </div>
 {% endblock content %}
