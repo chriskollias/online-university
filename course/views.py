@@ -8,8 +8,10 @@ from .models import Course, Subject, CourseSection, CourseUnit
 @group_required('Admin', 'Instructor')
 def create_course_view(request, *args, **kwargs):
     if request.method == 'POST':
-        form = CreateCourseForm(request.POST)
+        form = CreateCourseForm(request.POST, request.FILES)
+        print('uploaded files: ', request.FILES)
         if form.is_valid():
+            #print('this should work:', request.FILES['syllabus'])
             form.save()
             messages.success(request, "New course has been created.")
             return redirect('all-courses')

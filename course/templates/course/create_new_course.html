@@ -6,7 +6,7 @@
 
 <div class="form-container">
     <h2 class="form-heading">Create New Course</h2>
-    <form method="POST">
+    <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
         {{ form|crispy }}
         <button type="submit">Create New Course</button>
