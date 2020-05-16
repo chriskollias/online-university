@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from online_university.permissions import group_required
 from .forms import CreateCourseForm
-from .models import Course, Subject, CourseSection, CourseUnit
+from .models import Course, Subject, CourseSection, CourseUnit, CourseContentFile
 
 
 @group_required('Admin', 'Instructor')
@@ -11,7 +11,6 @@ def create_course_view(request, *args, **kwargs):
         form = CreateCourseForm(request.POST, request.FILES)
         print('uploaded files: ', request.FILES)
         if form.is_valid():
-            #print('this should work:', request.FILES['syllabus'])
             form.save()
             messages.success(request, "New course has been created.")
             return redirect('all-courses')
@@ -44,6 +43,8 @@ def course_home_view(request, course_id, *args, **kwargs):
     course = get_object_or_404(Course, pk=course_id)
     course_sections = CourseSection.objects.filter(course=course)
 
+    course_resources = CourseContentFile.objects.filter(course=course)
+
     # maps course units to their parent course sections
     course_units = {}
     for section in course_sections:
@@ -51,7 +52,7 @@ def course_home_view(request, course_id, *args, **kwargs):
         course_units[section] = section_units
 
     return render(request, 'course/course_homepage.html', {'course': course, 'course_sections': course_sections,
-                                                           'course_units': course_units})
+                                                           'course_units': course_units, 'course_resources': course_resources})
 
 
 def unit_content_view(request, unit_id, *args, **kwargs):

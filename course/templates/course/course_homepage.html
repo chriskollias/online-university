@@ -15,10 +15,19 @@
     </div>
     <div class="course-resources-container">
         <h2>Course Syllabus</h2>
-            <a href="{{ course.syllabus }}">syllabus file name</a>
+        {% if course.syllabus %}
+            <a href="{{ course.syllabus.url }}">syllabus file name</a>
+        {% else %}
+            <p>No syllabus available.</p>
+        {% endif %}
         <h2>Course Resources</h2>
-
-
+        {% if course_resources %}
+            {% for resource in course_resources %}
+                <a href="{{ resource.url }}">{{ resource.name }}</a>
+            {% endfor %}
+        {% else %}
+            <p>No course resources available.</p>
+        {% endif %}
     </div>
     <div class="course-section-container">
         {% if course_sections %}
