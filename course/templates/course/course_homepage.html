@@ -23,7 +23,7 @@
         <h2>Course Resources</h2>
         {% if course_resources %}
             {% for resource in course_resources %}
-                <a href="{{ resource.url }}">{{ resource.name }}</a>
+                <a href="{{ resource.file.url }}">{{ resource.name }}</a>
             {% endfor %}
         {% else %}
             <p>No course resources available.</p>
@@ -43,11 +43,23 @@
                             {% endfor %}
                         {% endif %}
                     {% endfor %}
-
-
                 </p>
             {% endfor %}
 
         {% endif %}
     </div>
+
+    <div>
+        <a class="btn btn-primary edit-btn" href="{% url 'edit-course-details' course.pk %}" role="button">Edit Course Details</a>
+    </div>
+
+    <div>
+        <a class="btn btn-primary edit-btn" href="{% url 'edit-course-content' course.pk %}" role="button">Edit Course Content</a>
+    </div>
+
+    <div>
+        <a class="btn btn-primary edit-btn" href="{% url 'edit-course-enrollment' course.pk %}" role="button">Edit Course Enrollment</a>
+    </div>
+
+
 {% endblock content %}

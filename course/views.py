@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from online_university.permissions import group_required
-from .forms import CreateCourseForm
+from .forms import CreateCourseForm, EditCourseDetailsForm, EditCourseEnrollmentForm
 from .models import Course, Subject, CourseSection, CourseUnit, CourseContentFile
 
 
@@ -58,3 +58,49 @@ def course_home_view(request, course_id, *args, **kwargs):
 def unit_content_view(request, unit_id, *args, **kwargs):
     unit = get_object_or_404(CourseUnit, pk=unit_id)
     return render(request, 'course/unit_content.html', {'unit': unit})
+
+
+def edit_course_details_view(request, course_id, *args, **kwargs):
+    course = get_object_or_404(Course, pk=course_id)
+
+    if not (request.user.groups.filter(name='Admin').exists() or request.user.pk in course.instructors):
+        messages.warning(request, 'You do not have permission to view that page.')
+        return redirect('landing-page')
+
+    if request.method == 'POST':
+        form = EditCourseDetailsForm(request.POST, instance=course)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Course details have been successfully updated.')
+            return redirect('all-courses')
+        else:
+            # TODO: real error handling here
+            print(form.errors)
+
+    form = EditCourseDetailsForm(instance=course)
+    return render(request, 'course/edit_course_details.html', {'form': form})
+
+
+def edit_course_content_view(request, course_id, *args, **kwargs):
+    return render(request, 'course/edit_course_content.html', {})
+
+
+def edit_course_enrollment_view(request, course_id, *args, **kwargs):
+    course = get_object_or_404(Course, pk=course_id)
+
+    if not (request.user.groups.filter(name='Admin').exists() or request.user.pk in course.instructors):
+        messages.warning(request, 'You do not have permission to view that page.')
+        return redirect('landing-page')
+
+    if request.method == 'POST':
+        form = EditCourseEnrollmentForm(request.POST, instance=course)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Course enrollment has been successfully updated.')
+            return redirect('all-courses')
+        else:
+            # TODO: real error handling here
+            print(form.errors)
+
+    form = EditCourseEnrollmentForm(instance=course)
+    return render(request, 'course/edit_course_enrollment.html', {'form': form})

@@ -43,15 +43,12 @@ def user_register_view(request, *args, **kwargs):
 def user_edit_view(request, user_id, *args, **kwargs):
     user = get_object_or_404(User, pk=user_id)
 
-    print('Condition 1', request.user.groups.filter(name='Admin').exists())
-
     # check if logged in user has permission to edit this user's profile
     if not (request.user.groups.filter(name='Admin').exists() or request.user.pk == user_id):
         messages.warning(request, 'You do not have permission to view that page.')
         return redirect('landing-page')
 
     if request.method == 'POST':
-        #base_form = UserCreationForm(request.POST, instance=user)
         extended_form = ExtendedUserCreationForm(request.POST)
         if extended_form.is_valid():
             user.first_name = extended_form.cleaned_data['first_name']

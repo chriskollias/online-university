@@ -48,3 +48,6 @@ class CourseContentFile(models.Model):
     file = models.FileField(upload_to='uploaded_course_content/')
     name = models.CharField(max_length=150)
     description = models.CharField(max_length=250)
+
+    def __str__(self):
+        return f'{self.name}'
