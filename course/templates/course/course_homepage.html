@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
 
+{% load user_tags %}
+
 {% block content %}
     <h2>{{ course.name }} ( {{ course.course_code }} )</h2>
     {{ course.description }}
@@ -49,17 +51,33 @@
         {% endif %}
     </div>
 
-    <div>
-        <a class="btn btn-primary edit-btn" href="{% url 'edit-course-details' course.pk %}" role="button">Edit Course Details</a>
-    </div>
+    {% if request.user|has_group:'Admin' or request.user|has_group:'Instructor' %}
 
-    <div>
-        <a class="btn btn-primary edit-btn" href="{% url 'edit-course-content' course.pk %}" role="button">Edit Course Content</a>
-    </div>
+        <div>
+            <a class="btn btn-primary edit-btn" href="{% url 'edit-course-details' course.pk %}" role="button">Edit Course Details</a>
+        </div>
 
-    <div>
-        <a class="btn btn-primary edit-btn" href="{% url 'edit-course-enrollment' course.pk %}" role="button">Edit Course Enrollment</a>
-    </div>
+        <div>
+            <a class="btn btn-primary edit-btn" href="{% url 'edit-course-content' course.pk %}" role="button">Edit Course Content</a>
+        </div>
+
+    {% endif %}
+
+    {% if request.user|has_group:'Admin' %}
+
+        <div>
+            <a class="btn btn-primary edit-btn" href="{% url 'edit-course-enrollment' course.pk %}" role="button">Edit Course Enrollment</a>
+        </div>
+
+    {% endif %}
+
+    {% if request.user|has_group:'Student' and not enrolled_student %}
+
+        <div>
+            <a class="btn btn-primary edit-btn" href="{% url 'enroll-student' course.pk request.user.pk %}" role="button">Enroll in course</a>
+        </div>
+
+    {% endif %}
 
 
 {% endblock content %}

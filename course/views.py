@@ -1,5 +1,6 @@
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404, reverse
 from django.contrib import messages
+from django.contrib.auth.models import User
 from online_university.permissions import group_required
 from .forms import CreateCourseForm, EditCourseDetailsForm, EditCourseEnrollmentForm
 from .models import Course, Subject, CourseSection, CourseUnit, CourseContentFile
@@ -45,6 +46,12 @@ def course_home_view(request, course_id, *args, **kwargs):
 
     course_resources = CourseContentFile.objects.filter(course=course)
 
+    # check if user is a student who is enrolled in this course
+    enrolled_student = False
+    if request.user.groups.filter(name='Student').exists():
+        if course.students.filter(pk=request.user.pk).exists():
+            enrolled_student = True
+
     # maps course units to their parent course sections
     course_units = {}
     for section in course_sections:
@@ -52,7 +59,7 @@ def course_home_view(request, course_id, *args, **kwargs):
         course_units[section] = section_units
 
     return render(request, 'course/course_homepage.html', {'course': course, 'course_sections': course_sections,
-                                                           'course_units': course_units, 'course_resources': course_resources})
+                'course_units': course_units, 'course_resources': course_resources, 'enrolled_student': enrolled_student})
 
 
 def unit_content_view(request, unit_id, *args, **kwargs):
@@ -63,7 +70,7 @@ def unit_content_view(request, unit_id, *args, **kwargs):
 def edit_course_details_view(request, course_id, *args, **kwargs):
     course = get_object_or_404(Course, pk=course_id)
 
-    if not (request.user.groups.filter(name='Admin').exists() or request.user.pk in course.instructors):
+    if not (request.user.groups.filter(name='Admin').exists() or course.instructors.filter(pk=request.user.pk).exists()):
         messages.warning(request, 'You do not have permission to view that page.')
         return redirect('landing-page')
 
@@ -82,13 +89,20 @@ def edit_course_details_view(request, course_id, *args, **kwargs):
 
 
 def edit_course_content_view(request, course_id, *args, **kwargs):
+    # TODO: basically everything here
+    course = get_object_or_404(Course, pk=course_id)
+
+    if not (request.user.groups.filter(name='Admin').exists() or course.instructors.filter(pk=request.user.pk).exists()):
+        messages.warning(request, 'You do not have permission to view that page.')
+        return redirect('landing-page')
+
     return render(request, 'course/edit_course_content.html', {})
 
 
 def edit_course_enrollment_view(request, course_id, *args, **kwargs):
     course = get_object_or_404(Course, pk=course_id)
 
-    if not (request.user.groups.filter(name='Admin').exists() or request.user.pk in course.instructors):
+    if not (request.user.groups.filter(name='Admin').exists() or course.instructors.filter(pk=request.user.pk).exists()):
         messages.warning(request, 'You do not have permission to view that page.')
         return redirect('landing-page')
 
@@ -104,3 +118,30 @@ def edit_course_enrollment_view(request, course_id, *args, **kwargs):
 
     form = EditCourseEnrollmentForm(instance=course)
     return render(request, 'course/edit_course_enrollment.html', {'form': form})
+
+
+def enroll_student_view(request, course_id, student_id, *args, **kwargs):
+    '''
+    enroll a student in a course
+    '''
+    course = get_object_or_404(Course, pk=course_id)
+    student = get_object_or_404(User, pk=student_id)
+
+    if not student.groups.filter(name='Student').exists():
+        messages.warning(request, 'User is not a student and thus cannot be enrolled in this course.')
+        return redirect(reverse('course-home'), kwargs={'course_id': course_id})
+
+    if course.students.filter(pk=student_id).exists():
+        if request.user.pk == student_id:
+            messages.warning(request, 'You are already enrolled in this course.')
+        else:
+            messages.warning(request, 'Student is already enrolled in this course.')
+        return redirect(reverse('course-home', kwargs={'course_id': course_id}))
+
+    course.students.add(student)
+    if request.user.pk == student_id:
+        messages.success(request, 'You have successfully enrolled in this course.')
+    else:
+        messages.success(request, f'{student.first_name} {student.last_name} has been successfully enrolled in this course.')
+    return redirect(reverse('course-home', kwargs={'course_id': course_id}))
+
