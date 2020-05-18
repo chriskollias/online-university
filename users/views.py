@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404, reverse
 from django.contrib.auth import logout
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
 from online_university.permissions import group_required
@@ -27,17 +27,31 @@ def user_profile_view(request, user_id, *args, **kwargs):
 
 def user_register_view(request, *args, **kwargs):
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        base_form = UserCreationForm(request.POST)
+        extended_form = ExtendedUserCreationForm(request.POST)
+        if base_form.is_valid() and extended_form.is_valid():
+            new_user = base_form.save()
+            first_name = extended_form.cleaned_data['first_name']
+            last_name = extended_form.cleaned_data['last_name']
+            email = extended_form.cleaned_data['email']
+            new_user.first_name = first_name
+            new_user.last_name = last_name
+            new_user.email = email
+            new_user.save()
+            student_group, created = Group.objects.get_or_create(name='Student')
+            new_user.groups.add(student_group)
+            messages.success(request, 'You have successfully created your account! You may now sign in.')
+            return redirect('user-login')
+        else:
+            # TODO: properly handle user registration errors
+            print(base_form.errors)
+            form_errors = base_form.errors + extended_form.errors
+            messages.warning(request, form_errors)
+            return redirect('user-register')
+    base_form = UserCreationForm()
+    extended_form = ExtendedUserCreationForm()
 
-        if form.is_valid():
-            form.save()
-
-            # TODO: need to handle adding to user groups here
-
-            return redirect('landing-page')
-
-    form = UserCreationForm()
-    return render(request, 'users/register.html', {'form': form})
+    return render(request, 'users/register.html', {'base_form': base_form, 'extended_form': extended_form})
 
 
 def user_edit_view(request, user_id, *args, **kwargs):

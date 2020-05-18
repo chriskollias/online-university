@@ -7,8 +7,9 @@
 <div class="form-container">
     <form method="POST">
         {% csrf_token %}
-        {{ form|crispy }}
-        <button type="submit">Register User</button>
+        {{ base_form|crispy }}
+        {{ extended_form|crispy }}
+        <button type="submit">Sign Up</button>
     </form>
 </div>
 
