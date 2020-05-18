@@ -1,8 +1,7 @@
 from django import forms
-from .models import Course
+from django.forms import ModelForm
 from django.contrib.auth.models import User
-from .models import Subject
-
+from .models import Course, Subject, CourseSection, CourseUnit
 
 class CreateCourseForm(forms.ModelForm):
     name = forms.CharField(max_length=150)
@@ -37,3 +36,25 @@ class EditCourseEnrollmentForm(forms.ModelForm):
     class Meta:
         model = Course
         fields = ['instructors', 'students']
+
+
+class CreateCourseSection(forms.ModelForm):
+    # should automatically select the course we're editing
+    name = forms.CharField(max_length=150)
+    description = forms.CharField(max_length=250)
+    section_order_num = forms.IntegerField() # need to handle no-duplicates
+
+    class Meta:
+        model = CourseSection
+        fields = ['name', 'description', 'section_order_num']
+
+
+class CreateCourseUnit(forms.ModelForm):
+    section = forms.ChoiceField() # need to get list of existing sections, or will it be automatic?
+    name = forms.CharField(max_length=150)
+    description = forms.CharField(max_length=250)
+    unit_order_num = forms.IntegerField() # need to handle no-duplicates
+
+    class Meta:
+        model = CourseUnit
+        fields = ['section', 'name', 'description', 'unit_order_num']

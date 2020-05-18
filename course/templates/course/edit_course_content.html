@@ -3,12 +3,37 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
-<div class="form-container">
-    <h2 class="form-heading">Update Course Content</h2>
-    <form method="POST" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ form|crispy }}
-        <button type="submit">Update Course Content</button>
-    </form>
-</div>
+
+    <h2>{{ course.name }}</h2>
+    <div class="course-section-container">
+        {% if course_sections %}
+            <h2>Course Sections</h2>
+            {% for section in course_sections %}
+                <p>
+                    {{ section.name }}
+
+                    {% for key, value in course_units.items %}
+                        {% if key == section %}
+                            {% for unit in value %}
+                                <br><a href="{% url 'unit-content' unit.pk  %}">Unit {{ unit.unit_order_num }}) {{ unit.name }}</a>
+                            {% endfor %}
+                        {% endif %}
+                    {% endfor %}
+                </p>
+            {% endfor %}
+
+        {% endif %}
+    </div>
+
+    <hr>
+
+    <div>
+        <a class="btn btn-primary edit-btn" href="{% url 'create-course-section' course.pk %}" role="button">Create New Course Section</a>
+    </div>
+    <div>
+        <a class="btn btn-primary edit-btn" href="{% url 'create-course-unit' course.pk %}" role="button">Create New Course Unit</a>
+    </div>
+
+
+
 {% endblock content %}

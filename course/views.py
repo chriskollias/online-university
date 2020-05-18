@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from online_university.permissions import group_required
 from .forms import CreateCourseForm, EditCourseDetailsForm, EditCourseEnrollmentForm
 from .models import Course, Subject, CourseSection, CourseUnit, CourseContentFile
+from .utils import map_course_units
 
 
 @group_required('Admin', 'Instructor')
@@ -43,7 +44,6 @@ def my_courses_view(request, *args, **kwargs):
 def course_home_view(request, course_id, *args, **kwargs):
     course = get_object_or_404(Course, pk=course_id)
     course_sections = CourseSection.objects.filter(course=course)
-
     course_resources = CourseContentFile.objects.filter(course=course)
 
     # check if user is a student who is enrolled in this course
@@ -52,11 +52,7 @@ def course_home_view(request, course_id, *args, **kwargs):
         if course.students.filter(pk=request.user.pk).exists():
             enrolled_student = True
 
-    # maps course units to their parent course sections
-    course_units = {}
-    for section in course_sections:
-        section_units = CourseUnit.objects.filter(section=section).order_by('unit_order_num')
-        course_units[section] = section_units
+    course_units = map_course_units(course_sections)
 
     return render(request, 'course/course_homepage.html', {'course': course, 'course_sections': course_sections,
                 'course_units': course_units, 'course_resources': course_resources, 'enrolled_student': enrolled_student})
@@ -67,6 +63,7 @@ def unit_content_view(request, unit_id, *args, **kwargs):
     return render(request, 'course/unit_content.html', {'unit': unit})
 
 
+@group_required('Admin', 'Instructor')
 def edit_course_details_view(request, course_id, *args, **kwargs):
     course = get_object_or_404(Course, pk=course_id)
 
@@ -88,17 +85,22 @@ def edit_course_details_view(request, course_id, *args, **kwargs):
     return render(request, 'course/edit_course_details.html', {'form': form})
 
 
+@group_required('Admin', 'Instructor')
 def edit_course_content_view(request, course_id, *args, **kwargs):
-    # TODO: basically everything here
     course = get_object_or_404(Course, pk=course_id)
+    course_sections = CourseSection.objects.filter(course=course)
+    course_resources = CourseContentFile.objects.filter(course=course)
+    course_units = map_course_units(course_sections)
 
     if not (request.user.groups.filter(name='Admin').exists() or course.instructors.filter(pk=request.user.pk).exists()):
         messages.warning(request, 'You do not have permission to view that page.')
         return redirect('landing-page')
 
-    return render(request, 'course/edit_course_content.html', {})
+    return render(request, 'course/edit_course_content.html', {'course': course, 'course_sections': course_sections,
+                'course_units': course_units, 'course_resources': course_resources,})
 
 
+@group_required('Admin')
 def edit_course_enrollment_view(request, course_id, *args, **kwargs):
     course = get_object_or_404(Course, pk=course_id)
 
@@ -145,3 +147,12 @@ def enroll_student_view(request, course_id, student_id, *args, **kwargs):
         messages.success(request, f'{student.first_name} {student.last_name} has been successfully enrolled in this course.')
     return redirect(reverse('course-home', kwargs={'course_id': course_id}))
 
+@group_required('Admin', 'Instructor')
+def create_course_section_view(request, course_id, *args, **kwargs):
+    course = get_object_or_404(Course, pk=course_id)
+    return render(request, 'course/create_course_section.html', {'course': course})
+
+@group_required('Admin', 'Instructor')
+def create_course_unit_view(request, course_id, *args, **kwargs):
+    course = get_object_or_404(Course, pk=course_id)
+    return render(request, 'course/create_course_unit.html', {'course': course})

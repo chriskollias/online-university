@@ -10,5 +10,11 @@
         {{ form|crispy }}
         <button type="submit">Update Course Details</button>
     </form>
+
+        <div>
+            <a class="btn btn-primary edit-btn" href="{% url 'enroll-student' course.pk request.user.pk %}" role="button">Create New Course Section</a>
+        </div>
+
+
 </div>
 {% endblock content %}
